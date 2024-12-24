@@ -1,0 +1,37 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+Student_data=pd.read_csv(r"https://raw.githubusercontent.com/harshul997/Molecular-Drug-Discovery-using-Graphical-Neutral-Networks/main/Week1/Assignment1/Student_Performance.csv")
+Student_data=Student_data.dropna()
+
+x=Student_data[['Hours Studied','Previous Scores','Extracurricular Activities','Sleep Hours','Sample Question Papers Practiced']].values
+y=Student_data['Performance Index'].values
+
+size=y.size
+b=float(0)
+w=np.zeros(5, dtype=float)
+t=float(0.1)
+
+for i in range (0,size):
+    if ((x[i][2])=='Yes'):
+        x[i][2]=int(1)
+    else: 
+        x[i][2]=int(0)
+x=x.astype(float)
+x=((x-np.mean(x,axis=0))/np.std(x,axis=0))
+
+cost_fn=float(1)
+prev_cost=float(0)  
+while abs(prev_cost - cost_fn) > 1e-6:
+    prev_cost = cost_fn
+    sum_arr=(np.dot(x,w)+b-y)
+    cost_fn=(np.sum(sum_arr*sum_arr))/(size*2)
+    gra_b=np.sum(sum_arr)/size
+    gra_w=np.dot(sum_arr,x)/size
+    w-=gra_w*t
+    b-=gra_b*t
+
+print("RMSE:", cost_fn)
+print("Weights:", w)
+print("Bias:", b)
